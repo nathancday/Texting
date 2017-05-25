@@ -74,7 +74,8 @@ counts <- words %>% split(.$sport) %>%
 library(ggsci) # coolest of color pals, D3!!!
 pal <- pal_d3("category10")(10)
 
-layout(matrix(c(1:8), ncol=2), heights=c(1, 4, 1, 4))
+
+
 par(mar=c(1, 0, 1, 0), mfcol= c(2,2))
 for (sport in unique(counts$sport)) {
     datf <- filter(counts, sport == sport)
@@ -82,7 +83,16 @@ for (sport in unique(counts$sport)) {
     title(sport, cex.main = 1.5)
 }
 
-
+# can't seem to get this to work
+# https://stackoverflow.com/questions/15224913/r-add-title-to-wordcloud-graphics-png
+layout(matrix(c(1:8), ncol=2), heights=c(1, 4, 1, 4))
+par(mar = c(0,0,0,0))
+layout.show(8)
+for (sport in unique(counts$sport)) {
+    datf <- filter(counts, sport == sport)
+    text(.5, .5, sport)
+    wordcloud(datf$word, datf$n, colors = pal, min.freq = 2)
+}
 term_mat <- counts %>% acast(word ~ sport, value.var = "n", fill = 0) 
 
 par(mfrow = c(1,1))
