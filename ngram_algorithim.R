@@ -25,59 +25,63 @@ smalls <- sample_frac(fulls, .1)
 
 rm(fulls, twitter, news, blogs)
 
-ngrams1<- foreach (i = 2:5) %dopar% {
-  unnest_tokens(smalls, gram, text, token = "ngrams", n = i) %>%
-    mutate(next_word = gsub(".*( .*$)", " \\1", gram),
-           gram = gsub("(.*) .*$", "\\1", gram) ) %>%
-    group_by(gram) %>%
-    count(next_word, sort = T) %>%
-    mutate(total_next = sum(n)) %>%
-    filter(n > 2) %>%
-    slice(1:3)
+ngrams1<- foreach (i = 2:6) %dopar% {
+    unnest_tokens(smalls, gram, text, token = "ngrams", n = i) %>%
+        mutate(next_word = gsub(".*( .*$)", " \\1", gram),
+               gram = gsub("(.*) .*$", "\\1", gram) ) %>%
+        group_by(gram) %>%
+        count(next_word, sort = T) %>%
+        mutate(total_next = sum(n),
+               coverage = cumsum(n / total_next)) %>%
+        filter(coverage < .500000001)
 }
 
-ngrams1 <- readRDS("ngrams1.RDS")
+
+saveRDS(ngrams1, "ngrams1.RDS")
+# ngrams1 <- readRDS("ngrams1.RDS")
 
 ### Guess ---------------------------------------------------------------------
 best_guessN <- function(st) {
-  
-  st %<>% tolower() %>% str_extract_all("[a-z]+'?[a-z]*") %>% unlist()
-  num_words <- length(st)
-  
-  if (num_words > 4) {
-    st <- st[-(1:(num_words - 4))]
-    num_words <- 4
-  }
-  
-  st_guess <- paste(st, collapse = " ")
-  
-  guess <- ngrams1[[num_words]] %>% filter(gram == st_guess) %>%
-    ungroup() %>%
-    mutate(prop = n / total_next) %>%
-    select(gram, next_word, prop)
-  
-  while (nrow(guess) < 1) {
-    num_words <- num_words - 1
-    st <- st[-1]
+    
+    st %<>% tolower() %>% str_extract_all("[a-z]+'?[a-z]*") %>% unlist()
+    num_words <- length(st)
+    
+    if (num_words > 4) {
+        st <- st[-(1:(num_words - 4))]
+        num_words <- 4
+    }
+    
     st_guess <- paste(st, collapse = " ")
+    
     guess <- ngrams1[[num_words]] %>% filter(gram == st_guess) %>%
-      ungroup() %>%
-      mutate(prop = n / total_next) %>%
-      select(gram, next_word, prop)
-  }
-  return(guess)
+        ungroup() %>%
+        mutate(prop = n / total_next,
+               coverage = cumsum(prop)) %>%
+        select(gram, next_word, coverage)
+    
+    while (nrow(guess) < 1) {
+        num_words <- num_words - 1
+        st <- st[-1]
+        st_guess <- paste(st, collapse = " ")
+        guess <- ngrams1[[num_words]] %>% filter(gram == st_guess) %>%
+            ungroup() %>%
+            mutate(prop = n / total_next) %>%
+            select(gram, next_word, prop)
+    }
+    return(guess)
 }
 
 ### Building a sentence --------------------------------------------------------
 # using the top result as the next word
-best_guessN("I")
-best_guessN("I have")
-best_guessN("I have to")
-best_guessN("I have to say")
-best_guessN("I have to say that")
-best_guessN("I have to say that I")
-best_guessN("I have to say that I am")
-best_guessN("I have to say that I am a")
-best_guessN("I have to say that I am a little")
-best_guessN("I have to say that I am a little late") # how did it know?
+# best_guessN("I")
+# best_guessN("I have")
+# best_guessN("I have to")
+# best_guessN("I have to say")
+# best_guessN("I have to say that")
+# best_guessN("I have to say that I")
+# best_guessN("I have to say that I am")
+# best_guessN("I have to say that I am a")
+# best_guessN("I have to say that I am a little")
+# best_guessN("I have to say that I am a little late") # how did it know?
+
 
