@@ -1,4 +1,4 @@
-## Build-a-scraper
+## Globals --------------------------------------------------------------------
 library(stringr)
 library(tidyverse)
 library(magrittr)
@@ -23,14 +23,8 @@ na_filler <- function(vector, reverse = F) {
     return(vector)
 }
 
-setwd("~/future/Text/sports_sentiment/")
 
-# documents source from : http://www.asapsports.com/
-# 4 sports 
-pages <- "http://www.asapsports.com/show_event.php?category=5&date=2017-5-30&title=NHL+STANLEY+CUP+FINAL%3A+PREDATORS+VS+PENGUINS"
-pages <- "http://www.asapsports.com/show_event.php?category=11&date=2017-5-25&title=NBA+EASTERN+CONFERENCE+FINALS%3A+CELTICS+VS+CAVALIERS"
-pages <- "http://www.asapsports.com/show_event.php?category=4&date=2017-5-28&title=BMW+PGA+CHAMPIONSHIP"
-pages <- "http://www.asapsports.com/show_event.php?category=3&date=2017-5-28&title=MONSTER+ENERGY+NASCAR+CUP+SERIES%3A+COCA-COLA+600"
+## Fxns -----------------------------------------------------------------------
 
 asap_scraper <- function(link_page) {
     pages <- read_html(link_page)
@@ -65,6 +59,17 @@ asap_scraper <- function(link_page) {
     
 }
 
-asap_scraper(pages)
+
+## Test Cases -----------------------------------------------------------------
+# ty www.asapsports.com
+
+# 4 sports
+# 4 events all-links pages
+pages <- "http://www.asapsports.com/show_event.php?category=5&date=2017-5-30&title=NHL+STANLEY+CUP+FINAL%3A+PREDATORS+VS+PENGUINS"
+pages <- "http://www.asapsports.com/show_event.php?category=11&date=2017-5-25&title=NBA+EASTERN+CONFERENCE+FINALS%3A+CELTICS+VS+CAVALIERS"
+pages <- "http://www.asapsports.com/show_event.php?category=4&date=2017-5-28&title=BMW+PGA+CHAMPIONSHIP"
+pages <- "http://www.asapsports.com/show_event.php?category=3&date=2017-5-28&title=MONSTER+ENERGY+NASCAR+CUP+SERIES%3A+COCA-COLA+600"
+
+asap_scraper(pages) # parse away matey
 
 
