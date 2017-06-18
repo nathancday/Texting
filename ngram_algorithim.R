@@ -25,7 +25,7 @@ smalls <- sample_frac(fulls, .1)
 
 rm(fulls, twitter, news, blogs)
 
-ngrams1<- foreach (i = 2:6) %dopar% {
+ngrams <- foreach (i = 2:6) %dopar% {
     unnest_tokens(smalls, gram, text, token = "ngrams", n = i) %>%
         mutate(next_word = gsub(".*( .*$)", " \\1", gram),
                gram = gsub("(.*) .*$", "\\1", gram) ) %>%
