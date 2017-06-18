@@ -55,13 +55,20 @@ ggplot(read_scores, aes(sport, score, color = sport)) +
 # JR Smith no comment
 
 # why is that
-word_scores <- with(sports, readability_word_stats_by(text, list(sport, speaker)))
-
 filter(sports, speaker %in% c("J.R. SMITH", "KYLE BUSCH"))
 # ahhh just sentences with some high & low syllable words
 
 # get 'em outta here
-word_scores %<>% filter(!(speaker %in% c("J.R. SMITH", "KYLE BUSCH")))
+read_scores %<>% filter(!(speaker %in% c("J.R. SMITH", "KYLE BUSCH")))
+
+# re-investigate
+ggplot(read_scores, aes(sport, score, color = sport)) +
+    stat_summary(fun.data = mean_cl_normal, geom = "crossbar", width = .5) +
+    geom_point(size = 4, alpha = .5) +
+    facet_wrap(~ method) +
+    coord_flip() + 
+    scale_color_d3() +
+    scale_fill_d3()
 
 # check high-freq-occurance influence
 ggplot(word_scores, aes(sport, n.sents, color = sport)) +
