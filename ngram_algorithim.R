@@ -37,8 +37,8 @@ ngrams1<- foreach (i = 2:6) %dopar% {
 }
 
 
-saveRDS(ngrams1, "ngrams1.RDS")
-# ngrams1 <- readRDS("ngrams1.RDS")
+saveRDS(ngrams, "ngrams.RDS")
+# ngrams <- readRDS("ngrams.RDS")
 
 ### Guess ---------------------------------------------------------------------
 best_guessN <- function(st) {
@@ -53,7 +53,7 @@ best_guessN <- function(st) {
     
     st_guess <- paste(st, collapse = " ")
     
-    guess <- ngrams1[[num_words]] %>% filter(gram == st_guess) %>%
+    guess <- ngrams[[num_words]] %>% filter(gram == st_guess) %>%
         ungroup() %>%
         mutate(prop = n / total_next,
                coverage = cumsum(prop)) %>%
@@ -63,7 +63,7 @@ best_guessN <- function(st) {
         num_words <- num_words - 1
         st <- st[-1]
         st_guess <- paste(st, collapse = " ")
-        guess <- ngrams1[[num_words]] %>% filter(gram == st_guess) %>%
+        guess <- ngrams[[num_words]] %>% filter(gram == st_guess) %>%
             ungroup() %>%
             mutate(prop = n / total_next) %>%
             select(gram, next_word, prop)
