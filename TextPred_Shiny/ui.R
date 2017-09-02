@@ -6,7 +6,8 @@ shinyUI(navbarPage("Text Prediction", inverse = T,
                    tabPanel("App",
                             sidebarLayout(
                                 sidebarPanel(
-                                    textInput("prompt", "Prompt", placeholder = "Start typing..."),
+                                    textInput("prompt", "Prompt",
+                                              placeholder = "Start typing..."),
                                     br(),
                                     strong("Parsed"),
                                     verbatimTextOutput("parsed")
@@ -16,5 +17,14 @@ shinyUI(navbarPage("Text Prediction", inverse = T,
                                     plotOutput("barplot")
                                 )
                               )
-                            )
+                            ),
+                   tabPanel("Code",
+                            fluidPage(
+                                tabsetPanel(
+                                    tabPanel("UI",
+                                             includeHTML("ui.html")),
+                                    tabPanel("Server",
+                                             includeHTML("server.html"))
+                                )
+                            ))
 ))

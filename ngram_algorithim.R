@@ -62,6 +62,13 @@ best_guessN <- function(st) {
     while (nrow(guess) < 1) {
         num_words <- num_words - 1
         st <- st[-1]
+        if length(st > 0) {
+            st_guess <- paste(st, collapse = " ")
+            guess <- ngrams[[num_words]] %>% filter(gram == st_guess) %>%
+                ungroup() %>%
+                mutate(prop = n / total_next) %>%
+                select(gram, next_word, prop)
+        }
         st_guess <- paste(st, collapse = " ")
         guess <- ngrams[[num_words]] %>% filter(gram == st_guess) %>%
             ungroup() %>%
